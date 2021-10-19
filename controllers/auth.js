@@ -31,7 +31,7 @@ const createUser = async (req, res = response)=>{
         res.json({
             ok: true,
             msg: 'User created',
-            data: user,
+            user: user,
             token: token,
         });
 
@@ -73,7 +73,7 @@ const loginUser = async (req, res = response)=>{
         res.json({
             ok: true,
             msg: 'Loged in',
-            data: userDB,
+            user: userDB,
             token: token,
         });
 
@@ -98,7 +98,7 @@ const renewJWT = async (req, res = response) => {
     res.json({
         ok: true,
         msg: 'Loged in',
-        data: userDB,
+        user: userDB,
         token: token,
     });
 }

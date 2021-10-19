@@ -1,20 +1,36 @@
+const {validateJWT} = require("../helpers/jwt");
 const { io } = require('../index');
+const { userConnected, userDisconnected, saveMessage  } = require('../controllers/socket');
 
 
-// Mensajes de Sockets
-io.on('connection', client => {
-    console.log('Cliente conectado');
+// Sockets messages
+io.on('connection', async (client) => {
 
-    client.on('disconnect', () => {
-        console.log('Cliente desconectado');
+    const [valid, uid] = validateJWT(client.handshake.headers['x-token']);
+    if(!valid){
+        return client.disconnect();
+    }
+
+    await userConnected(uid);
+
+    // Enter to specific room
+    // global room
+
+    // user room
+    client.join(uid)
+
+    // Listen personal message
+    client.on('personal-message', async (payload)=>{
+        await saveMessage(payload);
+        io.to(payload.to).emit('personal-message', payload);
+    });
+
+    client.on('disconnect', async () => {
+        await userDisconnected(uid)
     });
 
     client.on('mensaje', ( payload ) => {
-        console.log('Mensaje', payload);
-
         io.emit( 'mensaje', { admin: 'Nuevo mensaje' } );
-
     });
-
 
 });
